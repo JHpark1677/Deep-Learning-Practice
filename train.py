@@ -3,16 +3,15 @@ import os
 import torch
 from tqdm import tqdm
 import torch.nn as nn
-import torchvision
 from torchvision import models
 import torch.optim as optim
 
+#import models_
 import dataloader
 
 def train():
 
     trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
-
     model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
 
     if args.resume:
@@ -25,7 +24,7 @@ def train():
 
     criterion = nn.CrossEntropyLoss()
     #optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-5)
     #optimizer = optim.Adam(model.parameters(), lr=0.01, betas(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
     scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.95)
 
@@ -34,7 +33,6 @@ def train():
     train_losses = []
     val_losses = []
     batches = len(trainloader)
-    #test_batches = len(testloader)
     best_acc, accuracy = 0, 0
 
     for epoch in range(epoch_num):
@@ -109,6 +107,12 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
         default=False,
         type=bool,
         help='resume with checkpoint'
+    )
+    parser.add_argument(
+        "--model",
+        default='net',
+        type=str,
+        help='model name'
     )
     args = parser.parse_args()
     
