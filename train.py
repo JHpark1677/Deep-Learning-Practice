@@ -6,36 +6,44 @@ import torch.nn as nn
 from torchvision import models
 import torch.optim as optim
 
-#import models_
+import models_
 import dataloader
 
 def train():
 
     trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
+    #model = models_.EfficientNetB0().to(device)
     model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
+    optimizer = optim.Adadelta(model.parameters(), lr=0.01)
 
     if args.resume:
         print('==> Resuming from checkpoint..')
         assert os.path.isdir('../checkpoint'), 'Error : no checkpoint directory found'
-        checkpoint = torch.load('../checkpoint/ckpt.pth')
+        checkpoint = torch.load('../checkpoint/ckpt_2.pth')
         model.load_state_dict(checkpoint['model'])
+        optimizer = checkpoint['optimizer']
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
+    else : 
+        start_epoch = 0
 
     criterion = nn.CrossEntropyLoss()
+
     #optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
-    optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-5)
+    #optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-5)
     #optimizer = optim.Adam(model.parameters(), lr=0.01, betas(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=False)
-    scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.95)
+    #optimizer = optim.SGD(model.parameters(), lr=0.1,
+    #                  momentum=0.9, weight_decay=5e-4)
+    #scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+    #scheduler = optim.lr_scheduler.StepLR(optimizer=optimizer, step_size=1, gamma=0.95)
 
     # to visualize
-    epoch_num = 100
     train_losses = []
     val_losses = []
     batches = len(trainloader)
     best_acc, accuracy = 0, 0
 
-    for epoch in range(epoch_num):
+    for epoch in range(start_epoch, start_epoch+1000):
         total_loss = 0.0
         progress = tqdm(enumerate(trainloader), total=batches)
         for i, data in progress:
@@ -49,7 +57,7 @@ def train():
             optimizer.step()
             total_loss += loss.item()
 
-            if (i+1) % 300 == 0 : # how to set this ?
+            if i==390: # how to set this ?
                 total = 0
                 train_losses.append(total_loss/300)
                 model.eval()
@@ -72,16 +80,17 @@ def train():
                     if accuracy > best_acc :
                         print('Saving..')
                         state = {
-                            'model' : model.state_dict(), 
+                            'model' : model.state_dict(),
+                            'optimizer' : optimizer.state_dict(), 
                             'acc' : accuracy,
                             'epoch' : epoch
                         }
                         if not os.path.isdir('checkpoint'):
                             os.mkdir('checkpoint')
-                        torch.save(state, '../checkpoint/ckpt.pth')
+                        torch.save(state, '../checkpoint/ckpt_2.pth')
                         best_acc = accuracy
 
-        scheduler.step()
+        #scheduler.step()
 
 if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 위해서. 직접 파일을 실행시켰을 때 if문이 참이 되어 문장이 수행된다.
    
@@ -104,9 +113,9 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
     )
     parser.add_argument(
         "--resume",
-        default=False,
-        type=bool,
-        help='resume with checkpoint'
+        '-r',
+        action='store_true', 
+        help='resume from checkpoint'
     )
     parser.add_argument(
         "--model",
@@ -115,7 +124,6 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
         help='model name'
     )
     args = parser.parse_args()
-    
     torch.cuda.is_available()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     train()
