@@ -141,7 +141,7 @@ class Attention(nn.Module):
 
     attn = torch.matmul(attn_coef, value).transpose(1, 2) # [batch, num_head, num_patches, head_dim]->[batch, num_pathces,num_head, head_dim]
     attn = attn.reshape(attn.shape[0],attn.shape[1],-1) # ->[batch, num_pathces,num_head*head_dim]
-    x= self.to_out(attn)
+    x = self.to_out(attn)
     #####################
     return x
 
@@ -165,7 +165,6 @@ class Block(nn.Module):
       MLP(dim, mlp_dim, dropout),
       nn.Dropout(dropout)
     )
-
     #####################
 
   def forward(self, x):
@@ -181,7 +180,6 @@ class Block(nn.Module):
     residual2 = x
     x = self.block2(x)
     x = x + residual2
-
     #####################
     return x
 
@@ -254,15 +252,14 @@ class ViT(nn.Module):
 
         x = x[:,0,:]
         x = self.classification_head(x)
-
         #####################
         return x
     
 def test():
     patch_size = (4, 4)
-    dim = 128
+    dim = 200
     depth = 8
-    num_heads = 8
+    num_heads = 10
     mlp_dim = 256
     dropout = 0.
     net = ViT(image_shape = (3, 32, 32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout)

@@ -53,13 +53,13 @@ if __name__ == "__main__":
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     patch_size = (4,4)
-    dim = 128
-    depth = 8
-    num_heads = 8
+    dim = 200
+    depth = 12
+    num_heads = 20
     mlp_dim = 256
     dropout = 0.
     learning_rate = 0.001
-    epoch = 10
+    epoch = 20
 
     model = vit_model.ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -91,8 +91,8 @@ if __name__ == "__main__":
                 'acc' : test_accuracy,
                 'epoch' : epoch
             }
-            if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
+            if not os.path.isdir('../checkpoint'):
+                os.mkdir('../checkpoint')
             path = '../checkpoint/' + os.path.join(args.save_ckp)
             torch.save(state, path)
             best_acc = test_accuracy
