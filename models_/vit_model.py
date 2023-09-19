@@ -15,13 +15,17 @@ class Patchification(nn.Module):
     ##### YOUR CODE #####
     self.patchifying= nn.Conv2d(in_channels, embedding_dim, kernel_size=patch_size, stride=patch_size[0])
     # default patch size : 4x4
+    # in_channels 3, out_channels 128 (one patch당 128개 dimension의 embedding이 나오게 됨)
     #####################
 
   def forward(self, x):
     ##### YOUR CODE #####
     x=self.patchifying(x)
+    # x : torch.Size([2, 128, 8, 8])
     x=x.reshape(x.shape[0],x.shape[1],-1)
+    # x : torch.Size([2, 128, 64])
     x=x.transpose(1,2)
+    # x : torch.Size([2, 64, 128]), 64 number of embeddings with dim 128
     #####################
     return x
 
@@ -37,6 +41,7 @@ class Linear_Patchification(nn.Module):
     ##### YOUR CODE #####
     self.patch_size = patch_size
     self.patchifying= nn.Linear(patch_size[0]*patch_size[1]*in_channels, embedding_dim)
+    # convolution이 아닌 patch를 linearize해서, 
     #####################
 
   def forward(self, x):
@@ -52,8 +57,11 @@ class Linear_Patchification(nn.Module):
 
     x = x.reshape(b,c,h,s1,w,s2)
     x = x.permute(0,2,4,3,5,1)
+    # x: torch.Size([2, 8, 8, 4, 4, 3])
     x = x.reshape(b,h*w,s1*s2*c)
+    # x : torch.Size([2, 64, 48]), 64개 patch가 48개 RGB Value를 가지고 있는 상황
     x = self.patchifying(x)
+    # x : torch.Size([2, 64, 128])
     #####################
     return x
 
@@ -123,16 +131,16 @@ class Attention(nn.Module):
     key = self.to_key(x)
     value = self.to_value(x)
 
-    query =query.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)   #[batch, num_patches, num_heads*head_dim]-> [batch, num_heads, num_patches, head_dim]
-    key =key.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)
-    value =value.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)
+    query = query.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)   #[batch, num_patches, num_heads*head_dim]-> [batch, num_heads, num_patches, head_dim]
+    key = key.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)
+    value = value.reshape(batch_size,-1,self.num_heads, self.head_dim).transpose(1,2)
 
     attn_score = torch.matmul(query, key.transpose(-2, -1)) /self.scale
-    attn_coef=torch.softmax(attn_score, dim=-1)
-    attn_coef= self.dropout(attn_coef)
+    attn_coef = torch.softmax(attn_score, dim=-1) # compute softmax at last dimension
+    attn_coef = self.dropout(attn_coef)
 
     attn = torch.matmul(attn_coef, value).transpose(1, 2) # [batch, num_head, num_patches, head_dim]->[batch, num_pathces,num_head, head_dim]
-    attn= attn.reshape(attn.shape[0],attn.shape[1],-1) # ->[batch, num_pathces,num_head*head_dim]
+    attn = attn.reshape(attn.shape[0],attn.shape[1],-1) # ->[batch, num_pathces,num_head*head_dim]
     x= self.to_out(attn)
     #####################
     return x
@@ -147,7 +155,7 @@ class Block(nn.Module):
     super().__init__()
     ##### YOUR CODE #####
     self.block1 = nn.Sequential(
-      nn.LayerNorm(dim),
+      nn.LayerNorm(dim), # batch가 아니라 layer의 statistics를 가지고 normalization 하는 것
       Attention(dim, num_heads, dropout),
       nn.Dropout(dropout)
     )
@@ -199,16 +207,17 @@ class ViT(nn.Module):
         num_patches = (image_h // patch_h) * (image_w // patch_w) # e.g. [32 x 32] image & [8 x 8] patch size -> [4 x 4 = 16] patches
 
         # Patchification using convolution.
-        self.patchify = Patchification(image_ch, patch_size, dim) # e.g. image_ch : 3, patch_size : (4,4), dim = 128
+        #self.patchify = Patchification(image_ch, patch_size, dim) # e.g. image_ch : 3, patch_size : (4, 4), dim = 128
 
         # Linear Patchification for extra credit.
-        #self.patchify = Linear_Patchification(image_ch, patch_size, dim)
+        self.patchify = Linear_Patchification(image_ch, patch_size, dim)
 
         # Learnable positional encoding, 1+ is for class token.
         self.pos_embedding = nn.Parameter(torch.randn(1, 1 + num_patches, dim))
 
         # Class token which will be prepended to each image.
         self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
+        # learnable [class] embedding (BERT의 Class Token과 거의 동일한 역할을 수행)
 
         # Initialize attention blocks
         self.attention_blocks = nn.ModuleList([
@@ -235,7 +244,9 @@ class ViT(nn.Module):
         """
         ##### YOUR CODE #####
         x = self.patchify(img)
+        # x : torch.Size([2, 64, 128])
         x = torch.cat([cls_tokens, x], dim=1)
+        # x : torch.Size([2, 65, 128])
         x = x + self.pos_embedding
 
         for attention_block in self.attention_blocks:
@@ -248,14 +259,14 @@ class ViT(nn.Module):
         return x
     
 def test():
-    patch_size = (4,4)
+    patch_size = (4, 4)
     dim = 128
     depth = 8
     num_heads = 8
     mlp_dim = 256
     dropout = 0.
-    net = ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout)
-    x = torch.randn(2,3,32,32)
+    net = ViT(image_shape = (3, 32, 32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout)
+    x = torch.randn(2, 3, 32, 32)
     y = net(x)
     print(y.size())
 
