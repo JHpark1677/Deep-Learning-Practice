@@ -9,6 +9,9 @@ import torch.optim as optim
 import models_
 import dataloader
 
+from tools import train_tool
+from tools import eval_tool
+
 def train():
 
     trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
@@ -24,7 +27,7 @@ def train():
         optimizer = checkpoint['optimizer']
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
-    else : 
+    else:
         start_epoch = 0
 
     criterion = nn.CrossEntropyLoss()
@@ -103,7 +106,7 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
     )
     parser.add_argument(
         "--batch_size", 
-        default=128, 
+        default=100, 
         type=int
     )
     parser.add_argument(
@@ -123,7 +126,62 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
         type=str,
         help='model name'
     )
+    parser.add_argument(
+        '--load_ckp',
+        default='ckpt_cifar.pth',
+        type=str, 
+        help='checkpoint_name'
+    )
+    parser.add_argument(
+        '--save_ckp',
+        default='ckpt_cifar.pth',
+        type=str, 
+        help='checkpoint_name'
+    )
+
     args = parser.parse_args()
     torch.cuda.is_available()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    train()
+
+    trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
+    #model = models_.EfficientNetB0().to(device)
+    model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
+    optimizer = optim.Adadelta(model.parameters(), lr=0.01)
+    criterion = nn.CrossEntropyLoss()
+    epoch = 100
+    test_accuracy = 0
+
+    if args.resume:
+        print('==> Resuming from checkpoint..')
+        assert os.path.isdir('../checkpoint'), 'Error : no checkpoint directory found'
+        path = '../checkpoint/' + os.path.join(args.load_ckp)
+        checkpoint = torch.load(path)
+        model.load_state_dict(checkpoint['model'])
+        optimizer = checkpoint['optimizer']
+        best_acc = checkpoint['acc']
+        start_epoch = checkpoint['epoch']
+    else:
+        start_epoch = 0
+        best_acc = 0
+
+    optimizer = optim.Adadelta(model.parameters(), lr=0.01)
+
+    for epoch in range(start_epoch+1, start_epoch+epoch+1):
+        train_tool.train(model, trainloader, optimizer, criterion, epoch, device)
+        test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, device)
+
+        if test_accuracy > best_acc :
+            print('Saving..')
+            state = {
+                'model' : model.state_dict(),
+                'optimizer' : optimizer.state_dict(), 
+                'acc' : test_accuracy,
+                'epoch' : epoch
+            }
+            if not os.path.isdir('checkpoint'):
+                os.mkdir('checkpoint')
+            path = '../checkpoint/' + os.path.join(args.save_ckp)
+            torch.save(state, path)
+            best_acc = test_accuracy
+
+        print("\n[EPOCH: {}], \tModel: ResNet, \tTest Loss: {:.4f}, \tTest Accuracy: {:.2f} % \n".format(epoch, test_loss, test_accuracy))

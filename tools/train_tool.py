@@ -1,11 +1,14 @@
 from tqdm.auto import tqdm
 
-def train(model, epoch, train_loader, optimizer, criterion, DEVICE):
+def train(model, train_loader, optimizer, criterion, epoch, DEVICE):
     """
     Trains the model with training data.
+
+    Do NOT modify this function.
     """
+    batches = len(train_loader)
     model.train()
-    tqdm_bar = tqdm(train_loader)
+    tqdm_bar = tqdm(train_loader, total=batches)
     for batch_idx, (image, label) in enumerate(tqdm_bar):
         image = image.to(DEVICE)
         label = label.to(DEVICE)

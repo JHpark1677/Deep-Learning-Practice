@@ -22,4 +22,5 @@ def evaluate(model, test_loader, criterion, DEVICE):
 
     test_loss /= len(test_loader.dataset)
     test_accuracy = 100. * correct / len(test_loader.dataset)
+
     return test_loss, test_accuracy
