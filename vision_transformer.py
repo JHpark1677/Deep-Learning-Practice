@@ -9,7 +9,7 @@ from tools import train_tool
 from tools import eval_tool
 
 
-if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 위해서. 직접 파일을 실행시켰을 때 if문이 참이 되어 문장이 수행된다.
+if __name__ == "__main__":
    
     parser = argparse.ArgumentParser(description="Deep-Learning Practice")
     parser.add_argument(
@@ -36,13 +36,13 @@ if __name__ == "__main__": #import시에 함수만 실행될 수 있게하기 �
     )
     parser.add_argument(
         '--load_ckp',
-        default='ckpt_cifar.pth',
+        default='ckpt_vit.pth',
         type=str, 
         help='checkpoint_name'
     )
     parser.add_argument(
         '--save_ckp',
-        default='ckpt_cifar.pth',
+        default='ckpt_vit.pth',
         type=str, 
         help='checkpoint_name'
     )

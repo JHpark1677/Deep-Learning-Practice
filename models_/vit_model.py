@@ -14,6 +14,7 @@ class Patchification(nn.Module):
     """
     ##### YOUR CODE #####
     self.patchifying= nn.Conv2d(in_channels, embedding_dim, kernel_size=patch_size, stride=patch_size[0])
+    # default patch size : 4x4
     #####################
 
   def forward(self, x):
@@ -198,10 +199,10 @@ class ViT(nn.Module):
         num_patches = (image_h // patch_h) * (image_w // patch_w) # e.g. [32 x 32] image & [8 x 8] patch size -> [4 x 4 = 16] patches
 
         # Patchification using convolution.
-        self.patchify = Patchification(image_ch, patch_size, dim)
+        self.patchify = Patchification(image_ch, patch_size, dim) # e.g. image_ch : 3, patch_size : (4,4), dim = 128
 
         # Linear Patchification for extra credit.
-        # self.patchify = Linear_Patchification(image_ch, patch_size, dim)
+        #self.patchify = Linear_Patchification(image_ch, patch_size, dim)
 
         # Learnable positional encoding, 1+ is for class token.
         self.pos_embedding = nn.Parameter(torch.randn(1, 1 + num_patches, dim))
@@ -245,3 +246,18 @@ class ViT(nn.Module):
 
         #####################
         return x
+    
+def test():
+    patch_size = (4,4)
+    dim = 128
+    depth = 8
+    num_heads = 8
+    mlp_dim = 256
+    dropout = 0.
+    net = ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout)
+    x = torch.randn(2,3,32,32)
+    y = net(x)
+    print(y.size())
+
+if __name__ == '__main__':
+    test()
