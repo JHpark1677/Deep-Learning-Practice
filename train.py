@@ -106,12 +106,12 @@ if __name__ == "__main__":
     torch.cuda.is_available()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
+    trainloader, testloader = cifar_dataset.dataloader(args.path, args.dataset, args.batch_size)
     #model = models_.EfficientNetB0().to(device)
     model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=0.01)
     criterion = nn.CrossEntropyLoss()
-    epoch = 100
+    epoch = 300
     test_accuracy = 0
 
     if args.resume:
