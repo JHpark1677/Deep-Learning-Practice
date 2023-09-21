@@ -1,5 +1,33 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+class BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(self, in_planes, planes, stride=1):
+        super(BasicBlock, self).__init__()
+        self.conv1 = nn.Conv2d(
+            in_planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planes)
+        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
+                               stride=1, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(planes)
+
+        self.shortcut = nn.Sequential()
+        if stride != 1 or in_planes != self.expansion*planes:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(in_planes, self.expansion*planes,
+                          kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(self.expansion*planes)
+            )
+
+    def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+        out += self.shortcut(x)
+        out = F.relu(out)
+        return out
 
 class Patchification(nn.Module):
   """
@@ -28,6 +56,7 @@ class Patchification(nn.Module):
     # x : torch.Size([2, 64, 128]), 64 number of embeddings with dim 128
     #####################
     return x
+
 
 class Linear_Patchification(nn.Module):
   """
@@ -206,6 +235,7 @@ class ViT(nn.Module):
         depth: Number of attention blocks to be used
         mlp_dim: Hidden dimension to be used in MLP layer (=feedforward layer)
         """
+        self.cnn_block = BasicBlock(3, 3)
 
         image_ch, image_h, image_w = image_shape # image_ch will be 3 (RGB 3 channels) for CIFAR10 dataset
         patch_h, patch_w = patch_size
@@ -252,7 +282,8 @@ class ViT(nn.Module):
         After attention operation, classify with class token. (Simply take off it from whole tokens)
         """
         ##### YOUR CODE #####
-        x = self.patchify(img)
+        x = self.cnn_block(img)
+        x = self.patchify(x)
         # x : torch.Size([2, 64, 128])
         x = torch.cat([cls_tokens, x], dim=1)
         # x : torch.Size([2, 65, 128])
@@ -274,6 +305,7 @@ def test():
     mlp_dim = 256
     dropout = 0.
     net = ViT(image_shape = (3, 32, 32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout)
+    model = BasicBlock(3, 3)
     x = torch.randn(2, 3, 32, 32)
     y = net(x)
     print(y.size())

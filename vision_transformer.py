@@ -1,68 +1,35 @@
-import argparse
 import os
 import torch
 import torch.nn as nn
 from tqdm.auto import tqdm
-import dataloader
-from models_ import vit_model
+from dataloader import cifar_dataset
+from models_ import vit_cnn_model
 from tools import train_tool
 from tools import eval_tool
 
 
 if __name__ == "__main__":
-   
-    parser = argparse.ArgumentParser(description="Deep-Learning Practice")
-    parser.add_argument(
-        "--path", 
-        default="../data",
-        type=str,
-        help='data path'
-    )
-    parser.add_argument(
-        "--batch_size", 
-        default=128, 
-        type=int
-    )
-    parser.add_argument(
-        "--dataset", 
-        default="cifar10", 
-        type=str
-    )
-    parser.add_argument(
-        "--resume",
-        '-r',
-        action='store_true', 
-        help='resume from checkpoint'
-    )
-    parser.add_argument(
-        '--load_ckp',
-        default='ckpt_vit.pth',
-        type=str, 
-        help='checkpoint_name'
-    )
-    parser.add_argument(
-        '--save_ckp',
-        default='ckpt_vit.pth',
-        type=str, 
-        help='checkpoint_name'
-    )
 
+    from config import get_args_parser
+    import configargparse
+
+    parser = configargparse.ArgumentParser('VIT', parents=[get_args_parser()])
     args = parser.parse_args()
+
     torch.cuda.is_available()
-    trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
+    trainloader, testloader = cifar_dataset.dataloader(args.path, args.dataset, args.batch_size)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     patch_size = (4,4)
-    dim = 200
-    depth = 12
-    num_heads = 20
+    dim = 128
+    depth = 8
+    num_heads = 8
     mlp_dim = 256
     dropout = 0.
     learning_rate = 0.001
-    epoch = 20
+    epoch = 50
 
-    model = vit_model.ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout).to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    model = vit_cnn_model.ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout).to(device)
     criterion = nn.CrossEntropyLoss()
 
     if args.resume:
@@ -71,12 +38,13 @@ if __name__ == "__main__":
         path = '../checkpoint/' + os.path.join(args.load_ckp)
         checkpoint = torch.load(path)
         model.load_state_dict(checkpoint['model'])
-        optimizer = checkpoint['optimizer']
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
     else:
         best_acc = 0
         start_epoch = 0
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
     best_acc = 0
     for epoch in range(start_epoch+1, start_epoch+epoch+1):
@@ -87,7 +55,6 @@ if __name__ == "__main__":
             print('Saving..')
             state = {
                 'model' : model.state_dict(),
-                'optimizer' : optimizer.state_dict(), 
                 'acc' : test_accuracy,
                 'epoch' : epoch
             }

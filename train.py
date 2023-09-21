@@ -7,14 +7,14 @@ from torchvision import models
 import torch.optim as optim
 
 import models_
-import dataloader
+from dataloader import cifar_dataset
 
 from tools import train_tool
 from tools import eval_tool
 
 def train():
 
-    trainloader, testloader = dataloader.dataloader(args.path, args.dataset, args.batch_size)
+    trainloader, testloader = cifar_dataset.dataloader(args.path, args.dataset, args.batch_size)
     #model = models_.EfficientNetB0().to(device)
     model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=0.01)
@@ -97,43 +97,12 @@ def train():
 
 if __name__ == "__main__": 
    
-    parser = argparse.ArgumentParser(description="Deep-Learning Practice")
-    parser.add_argument(
-        "--path", 
-        default="../data",
-        type=str,
-        help='data path'
-    )
-    parser.add_argument(
-        "--batch_size", 
-        default=100, 
-        type=int
-    )
-    parser.add_argument(
-        "--dataset", 
-        default="cifar10", 
-        type=str
-    )
-    parser.add_argument(
-        "--resume",
-        '-r',
-        action='store_true', 
-        help='resume from checkpoint'
-    )
-    parser.add_argument(
-        '--load_ckp',
-        default='ckpt_cifar.pth',
-        type=str, 
-        help='checkpoint_name'
-    )
-    parser.add_argument(
-        '--save_ckp',
-        default='ckpt_cifar.pth',
-        type=str, 
-        help='checkpoint_name'
-    )
+    from config import get_args_parser
+    import configargparse
 
+    parser = configargparse.ArgumentParser('VIT', parents=[get_args_parser()])
     args = parser.parse_args()
+
     torch.cuda.is_available()
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
