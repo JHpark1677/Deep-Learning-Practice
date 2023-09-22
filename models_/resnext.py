@@ -10,7 +10,7 @@ import torch.nn.functional as F
 class Block(nn.Module):
     '''Grouped convolution block.'''
     expansion = 2
-
+        
     def __init__(self, in_planes, cardinality=32, bottleneck_width=4, stride=1):
         super(Block, self).__init__()
         group_width = cardinality * bottleneck_width

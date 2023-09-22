@@ -166,7 +166,7 @@ class Block(nn.Module):
     super().__init__()
     ##### YOUR CODE #####
     self.block1 = nn.Sequential(
-      nn.LayerNorm(dim), # batch가 아니라 layer의 statistics를 가지고 normalization 하는 것
+      nn.LayerNorm(dim), # batch가 아니라 layer의 statistics를 가지고 normalization 하는 것  # ViT는 LayerNorm을 먼저 수행한다. 
       Attention(dim, num_heads, dropout),
       nn.Dropout(dropout)
     )
