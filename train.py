@@ -24,10 +24,10 @@ if __name__ == "__main__":
     #model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
     model = models_.Wide_ResNet(depth=28, widen_factor=10, num_classes=10).to(device)
     #optimizer = optim.Adadelta(model.parameters(), lr=0.01)
-    optimizer = optim.SGD(model.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+    optimizer = optim.SGD(model.parameters(), lr=0.0005, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     #optimizer = optim.Adadelta(model.parameters(), lr=0.01)
-    
+
     criterion = nn.CrossEntropyLoss()
     epoch = 300
     test_accuracy = 0
@@ -38,14 +38,11 @@ if __name__ == "__main__":
         path = '../checkpoint/' + os.path.join(args.load_ckp)
         checkpoint = torch.load(path)
         model.load_state_dict(checkpoint['model'])
-        optimizer = checkpoint['optimizer']
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
     else:
         start_epoch = 0
         best_acc = 0
-
-    #optimizer = optim.Adadelta(model.parameters(), lr=0.01)
 
     for epoch in range(start_epoch+1, start_epoch+epoch+1):
         train_tool.train(model, trainloader, optimizer, criterion, epoch, device)
