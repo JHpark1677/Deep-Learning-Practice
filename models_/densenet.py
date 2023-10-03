@@ -34,8 +34,8 @@ class Transition(nn.Module):
 
 
 class DenseNet(nn.Module):
-    def __init__(self, block, nblocks, growth_rate=12, reduction=0.5, num_classes=10):
-        super(DenseNet, self).__init__()
+    def __init__(self, block, nblocks, growth_rate=12, reduction=0.5, num_classes=10): # instance 속성들을 initialization 해주는 def init
+        super(DenseNet, self).__init__() # nn.Module의 method를 사용할 것이다. 
         self.growth_rate = growth_rate
 
         num_planes = 2*growth_rate

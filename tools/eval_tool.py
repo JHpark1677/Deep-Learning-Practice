@@ -1,7 +1,7 @@
 import torch
 from tqdm.auto import tqdm
 
-def evaluate(model, test_loader, criterion, DEVICE):
+def evaluate(model, test_loader, criterion, DEVICE, vis, args):
     """
     Evaluates the trained model with test data.
 

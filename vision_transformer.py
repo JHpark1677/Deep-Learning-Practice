@@ -1,6 +1,8 @@
 import os
 import torch
 import torch.nn as nn
+import visdom
+
 from tqdm.auto import tqdm
 from dataloader import cifar_dataset
 from models_ import vit_cnn_model
@@ -17,9 +19,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     torch.cuda.is_available()
-    trainloader, testloader = cifar_dataset.dataloader(args.path, args.dataset, args.batch_size)
+    trainloader, testloader = cifar_dataset.dataloader(args)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    if args.visdom_true:
+        vis = visdom.Visdom()
+    else:
+        vis = None
+    
     patch_size = (4,4)
     dim = 128
     depth = 8
@@ -48,8 +55,8 @@ if __name__ == "__main__":
     
     best_acc = 0
     for epoch in range(start_epoch+1, start_epoch+epoch+1):
-        train_tool.train(model, trainloader, optimizer, criterion, epoch, device)
-        test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, device)
+        train_tool.train(model, trainloader, optimizer, criterion, epoch, device, vis, args)
+        test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, device, vis, args)
 
         if test_accuracy > best_acc :
             print('Saving..')
