@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torch.optim as optim
+import visdom
+
 import models_
 from dataloader import cifar_dataset
 from tools import train_tool
@@ -20,16 +22,18 @@ def main_worker(rank, args):
     print("what's device? :", device)
 
     # 3. visdom
-    vis = None
-
+    if args.visdom_true:
+        vis = visdom.Visdom()
+    else:
+        vis = None
     # 4. dataset
     
     trainloader, testloader = cifar_dataset.dataloader(args)
 
     # 5. model
     #model = models_.EfficientNetB0().to(device)
-    #model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
-    model = models_.Wide_ResNet(depth=28, widen_factor=10, num_classes=10).to(device)
+    model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
+    #model = models_.Wide_ResNet(depth=28, widen_factor=10, num_classes=10).to(device)
     model_without_ddp = model
     if args.distributed:
         model = torch.nn.parallel.DistributedDataParallel(module=model, device_ids=[int(args.gpu_ids[args.rank])], find_unused_parameters=True)
@@ -42,7 +46,8 @@ def main_worker(rank, args):
             "lr": args.lr_backbone,
         },
     ]
-
+    
+    #optimizer = optim.Adadelta(model.parameters())
     optimizer = optim.SGD(param_dicts, lr=0.0001, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     criterion = nn.CrossEntropyLoss()

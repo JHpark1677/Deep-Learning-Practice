@@ -6,7 +6,7 @@ def get_args_parser():
     parser = configargparse.ArgumentParser(add_help=False)
     parser.add_argument("--path", default="D:\data", type=str,help='data path')
     parser.add_argument("--batch_size", default=128, type=int)
-    parser.add_argument("--epoch_num", default=300, type=int)
+    parser.add_argument("--epoch_num", default=500, type=int)
 
     parser.add_argument("--dataset", default="cifar10", type=str)
     parser.add_argument("--resume",'-r',action='store_true', help='resume from checkpoint')
@@ -24,4 +24,8 @@ def get_args_parser():
     parser.add_argument('--rank', type=int, default=0)
     parser.add_argument('--world_size', type=int)
     
+    # data augmentation
+    parser.add_argument('--mixup',  action='store_true', help='activate mixup augmentation')
+    parser.add_argument('--alpha', default='1.0', type=float)
+
     return parser
