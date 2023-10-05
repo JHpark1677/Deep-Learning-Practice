@@ -22,7 +22,7 @@ We would like to acknowledge the contributions of the open-source community and 
 | ResNet + MixUp | 90.3% |mixup: BEYOND EMPIRICAL RISK MINIMIZATION |https://arxiv.org/abs/2010.11929 | 7832 |
 | JEM | ??? | Your Classifier is Secretly an Energy Based Model and You Should Treat it Like One|https://arxiv.org/abs/1912.03263 | 421 |
 
-|   Model  |   Article | Link | Citation # |
+|   Model  |   Acc | Link | Citation # |
 | -------- |  -------- | ---------| ---------|
 | Resnet18 | 87.3%   | https://arxiv.org/abs/1512.03385 | 183442 |
 | Resnet101   | 88.4%  | https://arxiv.org/abs/1512.03385 | 183442 |
@@ -30,4 +30,4 @@ We would like to acknowledge the contributions of the open-source community and 
 | ViT | 68.3% | https://arxiv.org/abs/2010.11929| 22310 |
 | ResNet + ViT | 88.2%  | | |
 | ResNet + MixUp | 90.3% |https://arxiv.org/abs/2010.11929 |7832 |
-| JEM | ??? |https://arxiv.org/abs/1912.03263 | 421 |
+| JEM (Energy Based Hybrid Model)|  |https://arxiv.org/abs/1912.03263 | 421 |
