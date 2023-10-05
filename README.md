@@ -11,9 +11,9 @@ If you have any questions or need assistance, feel free to contact us at [ltbljb
 
 We would like to acknowledge the contributions of the open-source community and the authors of the libraries and datasets used in this project.
 
-|   Model  |    Acc.  |  Article | Citation # |
-| -------- | -------- | -------- | ---------|
-| Resnet18 | 87.3%   | https://arxiv.org/abs/1512.03385 | 183442 |
+|   Model  |    Acc.  |  Article | Link | Citation # |
+| -------- | -------- | -------- | ---------|| ---------|
+| Resnet18 | 87.3%   | Deep Residual Learning for Image Recognition | https://arxiv.org/abs/1512.03385 | 183442 |
 | Resnet101   | 88.4%  | https://arxiv.org/abs/1512.03385 | 183442 |
 | Wide ResNet | 90.1% | https://arxiv.org/abs/1605.07146 | 7578 |
 | ViT | 68.3% | https://arxiv.org/abs/2010.11929| 22310 |
