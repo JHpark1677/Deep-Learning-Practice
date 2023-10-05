@@ -11,7 +11,8 @@ If you have any questions or need assistance, feel free to contact us at [ltbljb
 
 We would like to acknowledge the contributions of the open-source community and the authors of the libraries and datasets used in this project.
 
-|   Model  |    Acc.  |  Article |
-| -------- | -------- | -------- |
-| Resnet18 | Cell 2   | Cell 3   |
-| Resnet101   | Cell 5   | Cell 6   |
+|   Model  |    Acc.  |  Article | Citation # |
+| -------- | -------- | -------- | ---------|
+| Resnet18 | 93.3%   | https://arxiv.org/abs/1512.03385 | 183442 |
+| Resnet101   | 93.4%   | https://arxiv.org/abs/1512.03385 | 183442 |
+
