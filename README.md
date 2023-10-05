@@ -1,4 +1,3 @@
-![image](https://github.com/JHpark1677/Image-Classification-Baseline/assets/62788714/2892d76d-a0b1-4269-949f-3e750bf6f23f)# Deep-Learning-Studio
 
 Project Introduction:
 
