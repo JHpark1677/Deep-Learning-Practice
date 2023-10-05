@@ -11,7 +11,7 @@ If you have any questions or need assistance, feel free to contact us at [ltbljb
 
 We would like to acknowledge the contributions of the open-source community and the authors of the libraries and datasets used in this project.
 
-| Header 1 | Header 2 | Header 3 |
+|   Model  |    Acc.  |  Article |
 | -------- | -------- | -------- |
-| Cell 1   | Cell 2   | Cell 3   |
-| Cell 4   | Cell 5   | Cell 6   |
+| Resnet18 | Cell 2   | Cell 3   |
+| Resnet101   | Cell 5   | Cell 6   |
