@@ -32,7 +32,8 @@ def main_worker(rank, args):
 
     # 5. model
     #model = models_.EfficientNetB0().to(device)
-    model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
+    model = models_.resnet.ResNet18().to(device)
+    #model = models.resnet101(weights='ResNet101_Weights.DEFAULT').to(device)
     #model = models_.Wide_ResNet(depth=28, widen_factor=10, num_classes=10).to(device)
     model_without_ddp = model
     if args.distributed:
@@ -48,7 +49,7 @@ def main_worker(rank, args):
     ]
     
     #optimizer = optim.Adadelta(model.parameters())
-    optimizer = optim.SGD(param_dicts, lr=0.0001, momentum=0.9, weight_decay=5e-4)
+    optimizer = optim.SGD(param_dicts, lr=0.1, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     criterion = nn.CrossEntropyLoss()
     args.epoch_num = 300
@@ -72,8 +73,8 @@ def main_worker(rank, args):
             trainloader.sampler.set_epoch(epoch)
             
         train_tool.train(model, trainloader, optimizer, criterion, epoch, device, vis, args)
-        
         test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, device, vis, args)
+
         scheduler.step()
         if test_accuracy > best_acc :
             print('Saving..')
