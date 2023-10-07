@@ -14,7 +14,7 @@ We would like to acknowledge the contributions of the open-source community and 
 |   Model  |   Acc | Link | Citation # |
 | -------- |  -------- | ---------| ---------|
 | Resnet18 | 95.67%   | https://arxiv.org/abs/1512.03385 | 183442 |
-| Resnet101   | 93.4%  | https://arxiv.org/abs/1512.03385 | 183442 |
+| Resnet101   | 95.77%  | https://arxiv.org/abs/1512.03385 | 183442 |
 | Wide ResNet | 94.1% |https://arxiv.org/abs/1605.07146 | 7578 |
 | ViT | 68.3% | https://arxiv.org/abs/2010.11929| 22310 |
 | ResNet + ViT | 93.2%  | | |
