@@ -34,7 +34,7 @@ if __name__ == "__main__":
     mlp_dim = 256
     dropout = 0.
     learning_rate = 0.001
-    epoch = 50
+    epoch = 1000
 
     model = vit_cnn_model.ViT(image_shape = (3,32,32), patch_size = patch_size, num_classes = 10, dim = dim, num_heads = num_heads, depth = depth, mlp_dim = mlp_dim, dropout=dropout).to(device)
     criterion = nn.CrossEntropyLoss()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     best_acc = 0
     for epoch in range(start_epoch+1, start_epoch+epoch+1):
         train_tool.train(model, trainloader, optimizer, criterion, epoch, device, vis, args)
-        test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, device, vis, args)
+        test_loss, test_accuracy = eval_tool.evaluate(model, testloader, criterion, epoch, device, vis, args)
 
         if test_accuracy > best_acc :
             print('Saving..')
