@@ -19,7 +19,7 @@ We would like to acknowledge the contributions of the open-source community and 
 | Resnet101   | 95.77%  | https://arxiv.org/abs/1512.03385 | 183442 |
 | Wide ResNet | 91.31% (d:16 / w:3) |https://arxiv.org/abs/1605.07146 | 7578 |
 | Wide ResNet |  | https://arxiv.org/abs/1605.07146|7578|
-| ViT | 68.3% | https://arxiv.org/abs/2010.11929| 22310 |
+| ViT | 80.97% | https://arxiv.org/abs/2010.11929| 22310 |
 | ViT + MixUp |  | | |
 | ResNet + ViT + Mixup | 92.56%  | | |
 | ResNet18 + MixUp | 96.11% |https://arxiv.org/abs/2010.11929 |7832 |
