@@ -20,8 +20,8 @@ We would like to acknowledge the contributions of the open-source community and 
 | Wide ResNet | 91.31% (d:16 / w:3) |https://arxiv.org/abs/1605.07146 | 7578 |
 | Wide ResNet |  | https://arxiv.org/abs/1605.07146|7578|
 | ViT | 68.3% | https://arxiv.org/abs/2010.11929| 22310 |
-| ViT + MixUp | 92.56% | | |
-| ResNet + ViT | 93.2%  | | |
+| ViT + MixUp |  | | |
+| ResNet + ViT + Mixup | 92.56%  | | |
 | ResNet18 + MixUp | 96.11% |https://arxiv.org/abs/2010.11929 |7832 |
 | ResNet101 + MixUp | 96.68%|https://arxiv.org/abs/2010.11929 |7832 |
 | JEM (Energy Based Hybrid Model)| ??? |https://arxiv.org/abs/1912.03263 | 421 |
